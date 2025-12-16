@@ -31,7 +31,9 @@ export default function Layout({ children }) {
   const { currentUser, cycleSignIn, toggleTheme, theme, setSearch } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
-  const isCreate = location.pathname === '/create';
+  const path = location.pathname;
+  const hideSearch =
+    path === '/create' || path.startsWith('/profile') || path === '/me';
 
   return (
     <div className="app-shell">
@@ -61,7 +63,7 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      {!isCreate && (
+      {!hideSearch && (
         <div className="toolbar">
           <SearchBar onChange={(v) => setSearch(v)} />
         </div>
