@@ -102,6 +102,29 @@ export function AppProvider({ children }) {
     }
   }, []);
 
+  const resolveTagIds = useCallback(
+    (rawTags) => {
+      const byName = new Map(tags.map((tag) => [String(tag.name).toLowerCase(), tag.id]));
+      const byId = new Set(tags.map((tag) => Number(tag.id)));
+      const result = new Set();
+
+      rawTags.forEach((token) => {
+        const value = String(token).trim();
+        if (!value) return;
+        const idFromHash = value.startsWith('#') ? Number(value.slice(1)) : NaN;
+        if (!Number.isNaN(idFromHash) && byId.has(idFromHash)) {
+          result.add(idFromHash);
+          return;
+        }
+        const named = byName.get(value.toLowerCase());
+        if (named) result.add(named);
+      });
+
+      return Array.from(result);
+    },
+    [tags],
+  );
+
   const loadBookmarks = useCallback(async () => {
     if (!token) {
       setBookmarks([]);
@@ -239,9 +262,7 @@ export function AppProvider({ children }) {
     if (!payload.title?.trim() || !payload.content?.trim()) {
       throw new Error('Заголовок и текст обязательны.');
     }
-    const selectedTagIds = tags
-      .filter((tag) => payload.tags.includes(tag.name))
-      .map((tag) => tag.id);
+    const selectedTagIds = resolveTagIds(payload.tags);
     const data = await graphqlRequest(
       `
         mutation CreatePost($input: CreatePostInput!) {
@@ -273,9 +294,7 @@ export function AppProvider({ children }) {
     if (!patch.title?.trim() || !patch.content?.trim()) {
       throw new Error('Заголовок и текст обязательны.');
     }
-    const selectedTagIds = tags
-      .filter((tag) => (patch.tags ?? []).includes(tag.name))
-      .map((tag) => tag.id);
+    const selectedTagIds = resolveTagIds(patch.tags ?? []);
 
     await graphqlRequest(
       `
@@ -458,6 +477,8 @@ export function AppProvider({ children }) {
     addComment,
     updateUser,
     changePassword
+    ,
+    tags
   };
 
   return (

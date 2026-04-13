@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../state/AppContext.jsx';
 
 export default function PostForm() {
-  const { posts, addPost, updatePost, currentUser } = useApp();
+  const { posts, addPost, updatePost, currentUser, tags: availableTags } = useApp();
   const [searchParams] = useSearchParams();
   const postId = searchParams.get('edit');
   const editingPost = useMemo(() => posts.find((p) => p.id === postId), [posts, postId]);
@@ -37,7 +37,7 @@ export default function PostForm() {
       title: trimmedTitle,
       content: trimmedContent,
       tags: tags
-        .split(' ')
+        .split(/[\s,]+/)
         .map((t) => t.trim())
         .filter(Boolean),
       images: images
@@ -85,9 +85,15 @@ export default function PostForm() {
         <input
           value={tags}
           onChange={(e) => setTags(e.target.value)}
+          list="available-tags"
           placeholder="евро семейная карточки"
         />
-        <span className="hint">Разделяйте теги пробелом</span>
+        <datalist id="available-tags">
+          {availableTags.map((tag) => (
+            <option key={tag.id} value={tag.name} />
+          ))}
+        </datalist>
+        <span className="hint">Разделяйте теги пробелом или запятой. Можно выбрать из подсказок.</span>
       </label>
       
       <label>
