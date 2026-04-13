@@ -34,7 +34,13 @@ export default function Layout({ children }) {
   const navigate = useNavigate();
   const path = location.pathname;
   const hideSearch =
-    path === '/create' || path.startsWith('/profile') || path === '/me' || path === '/login' || path === '/register';
+    path === '/create' ||
+    path.startsWith('/profile') ||
+    path.startsWith('/post/') ||
+    path === '/me' ||
+    path === '/login' ||
+    path === '/register' ||
+    path === '/admin';
 
   return (
     <div className="app-shell">
