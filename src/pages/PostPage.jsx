@@ -36,14 +36,14 @@ const CommentIcon = () => (
 
 export default function PostPage() {
   const { postId } = useParams();
-  const { posts, users, currentUser, incrementView, vote, addComment, deletePost } = useApp();
+  const { posts, currentUser, addComment, deletePost, loadComments, commentsByPost } = useApp();
   const navigate = useNavigate();
-  const [commentName, setCommentName] = useState('');
   const [commentText, setCommentText] = useState('');
+  const [error, setError] = useState('');
   const viewMarked = useRef(false);
 
   const post = useMemo(() => posts.find((p) => p.id === postId), [posts, postId]);
-  const author = useMemo(() => users.find((u) => u.id === post?.authorId), [users, post]);
+  const comments = commentsByPost[postId] ?? [];
 
   useEffect(() => {
     viewMarked.current = false;
@@ -51,10 +51,10 @@ export default function PostPage() {
 
   useEffect(() => {
     if (post && !viewMarked.current) {
-      incrementView(post.id);
       viewMarked.current = true;
+      loadComments(post.id);
     }
-  }, [post, incrementView]);
+  }, [loadComments, post]);
 
   if (!post) return <div className="muted">Публикация не найдена.</div>;
 
@@ -63,18 +63,15 @@ export default function PostPage() {
 
   const handleComment = () => {
     if (!commentText.trim()) return;
-    addComment(post.id, {
-      userName: commentName || currentUser.name || 'Гость',
-      text: commentText
-    });
-    setCommentName('');
-    setCommentText('');
+    setError('');
+    addComment(post.id, { text: commentText })
+      .then(() => setCommentText(''))
+      .catch((e) => setError(e.message));
   };
 
   const handleDelete = () => {
     if (confirm('Удалить публикацию?')) {
-      deletePost(post.id);
-      navigate('/');
+      deletePost(post.id).then(() => navigate('/'));
     }
   };
 
@@ -84,7 +81,7 @@ export default function PostPage() {
         <div>
           <div className="post-meta">
             <span className="author">
-              <Link to={`/profile/${author?.id}`}>{author?.name}</Link>
+              <Link to={`/profile/${post.authorId}`}>{post.authorName}</Link>
             </span>
             <span className="dot">·</span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
@@ -95,9 +92,7 @@ export default function PostPage() {
         <div className="post-cta">
           <BookmarkButton postId={post.id} />
           <div className="votes">
-            <button onClick={() => vote(post.id, 1)}>⬆</button>
             <span>{post.score}</span>
-            <button onClick={() => vote(post.id, -1)}>⬇</button>
           </div>
         </div>
       </div>
@@ -119,7 +114,7 @@ export default function PostPage() {
           <EyeIcon /> Просмотры: {post.views}
         </span>
         <span className="stat">
-          <CommentIcon /> Комментарии: {post.comments.length}
+          <CommentIcon /> Комментарии: {comments.length}
         </span>
       </div>
 
@@ -136,13 +131,8 @@ export default function PostPage() {
 
       <section className="comments-block">
         <h3>Комментарии</h3>
-        <CommentList comments={post.comments} />
+        <CommentList comments={comments} />
         <div className="comment-form">
-          <input
-            placeholder="Ваше имя"
-            value={commentName}
-            onChange={(e) => setCommentName(e.target.value)}
-          />
           <textarea
             placeholder="Текст комментария"
             value={commentText}
@@ -152,6 +142,7 @@ export default function PostPage() {
           <button className="pill" onClick={handleComment}>
             Отправить
           </button>
+          {error && <div className="notice">{error}</div>}
         </div>
       </section>
     </article>

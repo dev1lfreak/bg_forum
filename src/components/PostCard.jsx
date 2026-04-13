@@ -1,16 +1,12 @@
 import { Link } from 'react-router-dom';
 import TagList from './TagList.jsx';
 import BookmarkButton from './BookmarkButton.jsx';
-import { useApp } from '../state/AppContext.jsx';
 
 export default function PostCard({ post }) {
-  const { users } = useApp();
-  const author = users.find((u) => u.id === post.authorId);
-
   return (
     <article className="post-card">
       <div className="post-meta">
-        <span className="author">{author?.name ?? 'Автор'}</span>
+        <span className="author">{post.authorName ?? 'Автор'}</span>
         <span className="dot">·</span>
         <span>{new Date(post.createdAt).toLocaleDateString()}</span>
       </div>
@@ -28,6 +24,7 @@ export default function PostCard({ post }) {
     </article>
   );
 }
+
 
 
 

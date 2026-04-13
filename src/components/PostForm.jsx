@@ -13,6 +13,8 @@ export default function PostForm() {
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
   const [images, setImages] = useState('');
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     if (editingPost) {
@@ -23,7 +25,7 @@ export default function PostForm() {
     }
   }, [editingPost]);
 
-  const handleSubmit = (status) => {
+  const handleSubmit = async (status) => {
     const payload = {
       title,
       content,
@@ -38,12 +40,20 @@ export default function PostForm() {
       status
     };
 
-    if (editingPost) {
-      updatePost(editingPost.id, payload);
-      navigate(`/post/${editingPost.id}`);
-    } else {
-      const id = addPost(payload);
-      navigate(status === 'draft' ? '/me' : `/post/${id}`);
+    setError('');
+    setPending(true);
+    try {
+      if (editingPost) {
+        await updatePost(editingPost.id, payload);
+        navigate(`/post/${editingPost.id}`);
+      } else {
+        const id = await addPost(payload);
+        navigate(status === 'draft' ? '/me' : `/post/${id}`);
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setPending(false);
     }
   };
 
@@ -95,16 +105,18 @@ export default function PostForm() {
       </label>
 
       <div className="editor-actions">
-        <button className="pill" onClick={() => handleSubmit('published')}>
+        <button className="pill" onClick={() => handleSubmit('published')} disabled={pending}>
           Опубликовать
         </button>
-        <button className="ghost" onClick={() => handleSubmit('draft')}>
+        <button className="ghost" onClick={() => handleSubmit('draft')} disabled={pending}>
           Сохранить как черновик
         </button>
       </div>
+      {error && <div className="notice">{error}</div>}
     </section>
   );
 }
+
 
 
 

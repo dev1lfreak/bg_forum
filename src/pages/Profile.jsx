@@ -18,14 +18,7 @@ export default function Profile() {
   const handleEditName = () => {
     const next = prompt('Новое имя профиля', user.name);
     if (next && next.trim()) {
-      updateUser(user.id, { name: next.trim() });
-    }
-  };
-
-  const handleEditBio = () => {
-    const next = prompt('Новое описание профиля', user.bio);
-    if (next && next.trim()) {
-      updateUser(user.id, { bio: next.trim() });
+      updateUser(user.id, { username: next.trim() });
     }
   };
 
@@ -34,16 +27,13 @@ export default function Profile() {
       <header className="profile-head">
         <div>
           <h1>{user.name}</h1>
-          <p className="muted">{user.bio}</p>
+          <p className="muted">Профиль участника сообщества настольных игр.</p>
         </div>
         <span className="label">{user.role}</span>
         {canEditProfile && (
           <div className="editor-actions">
             <button className="ghost" onClick={handleEditName}>
               Изменить имя
-            </button>
-            <button className="ghost" onClick={handleEditBio}>
-              Изменить описание
             </button>
           </div>
         )}

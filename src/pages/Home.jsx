@@ -4,7 +4,7 @@ import PostCard from '../components/PostCard.jsx';
 import { useApp } from '../state/AppContext.jsx';
 
 export default function Home() {
-  const { posts, search, currentUser } = useApp();
+  const { posts, search, currentUser, loading, error } = useApp();
 
   const filtered = useMemo(() => {
     if (!search) return posts.filter((p) => p.status === 'published');
@@ -24,6 +24,8 @@ export default function Home() {
   return (
     <div className="grid">
       <section className="feed">
+        {loading && <div className="muted">Загрузка публикаций...</div>}
+        {error && <div className="notice">{error}</div>}
         {filtered.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}

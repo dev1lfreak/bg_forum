@@ -28,12 +28,12 @@ const MoonIcon = () => (
 );
 
 export default function Layout({ children }) {
-  const { currentUser, cycleSignIn, toggleTheme, theme, setSearch } = useApp();
+  const { currentUser, toggleTheme, theme, setSearch, logout } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
   const hideSearch =
-    path === '/create' || path.startsWith('/profile') || path === '/me';
+    path === '/create' || path.startsWith('/profile') || path === '/me' || path === '/login' || path === '/register';
 
   return (
     <div className="app-shell">
@@ -46,12 +46,20 @@ export default function Layout({ children }) {
           <button className="ghost icon-btn" onClick={toggleTheme} aria-label="Переключить тему">
             {theme === 'light' ? <MoonIcon /> : <SunIcon />}
           </button>
-          <button className="ghost" onClick={cycleSignIn}>
-            Sign in ({currentUser?.role})
-          </button>
-          <button className="ghost" disabled>
-            Sign up
-          </button>
+          {currentUser?.role === 'guest' ? (
+            <>
+              <Link className="ghost" to="/login">
+                Вход
+              </Link>
+              <Link className="ghost" to="/register">
+                Регистрация
+              </Link>
+            </>
+          ) : (
+            <button className="ghost" onClick={logout}>
+              Выйти ({currentUser?.role})
+            </button>
+          )}
           <Link className="pill" to="/create">
             Создать пост
           </Link>

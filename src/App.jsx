@@ -6,6 +6,8 @@ import Home from './pages/Home.jsx';
 import PostPage from './pages/PostPage.jsx';
 import CreatePost from './pages/CreatePost.jsx';
 import Profile from './pages/Profile.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 function ScrollToTop() {
@@ -27,10 +29,16 @@ export default function App() {
         <Route path="/post/:postId" element={<PostPage />} />
         <Route path="/create" element={<CreatePost />} />
         <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/me"
           element={
-            currentUser ? <Navigate to={`/profile/${currentUser.id}`} replace /> : <NotFound />
+            currentUser?.role !== 'guest' ? (
+              <Navigate to={`/profile/${currentUser.id}`} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
         <Route path="*" element={<NotFound />} />
@@ -38,6 +46,7 @@ export default function App() {
     </Layout>
   );
 }
+
 
 
 

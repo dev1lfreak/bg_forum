@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/bg_forum/',
+  base: '/',
   plugins: [react({
     jsxRuntime: 'automatic',
   })],
@@ -17,6 +17,7 @@ export default defineConfig({
     },
   },
 });
+
 
 
 
