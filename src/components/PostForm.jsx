@@ -89,18 +89,7 @@ export default function PostForm() {
         />
         <span className="hint">Разделяйте теги пробелом</span>
       </label>
-
-      <label>
-        Ссылки на изображения
-        <textarea
-          value={images}
-          onChange={(e) => setImages(e.target.value)}
-          placeholder="https://..."
-          rows={3}
-        />
-        <span className="hint">Каждая ссылка с новой строки</span>
-      </label>
-
+      
       <label>
         Текст
         <textarea
