@@ -2,15 +2,26 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { apiRequest, graphqlRequest } from '../api/client.js';
 
 const AppContext = createContext();
+const STORAGE_TOKEN_KEY = 'bg_forum_token';
+const STORAGE_USER_KEY = 'bg_forum_auth_user';
+const STORAGE_THEME_KEY = 'bg_forum_theme';
 
 export function AppProvider({ children }) {
   const [posts, setPosts] = useState([]);
   const [tags, setTags] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [commentsByPost, setCommentsByPost] = useState({});
-  const [token, setToken] = useState(null);
-  const [authUser, setAuthUser] = useState(null);
-  const [theme, setTheme] = useState('light');
+  const [token, setToken] = useState(() => localStorage.getItem(STORAGE_TOKEN_KEY));
+  const [authUser, setAuthUser] = useState(() => {
+    const raw = localStorage.getItem(STORAGE_USER_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  });
+  const [theme, setTheme] = useState(() => localStorage.getItem(STORAGE_THEME_KEY) || 'light');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -113,6 +124,26 @@ export function AppProvider({ children }) {
     loadBookmarks();
   }, [loadBookmarks]);
 
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem(STORAGE_TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(STORAGE_TOKEN_KEY);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (authUser) {
+      localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(authUser));
+    } else {
+      localStorage.removeItem(STORAGE_USER_KEY);
+    }
+  }, [authUser]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_THEME_KEY, theme);
+  }, [theme]);
+
   const currentUser = useMemo(
     () =>
       authUser
@@ -179,6 +210,8 @@ export function AppProvider({ children }) {
     setToken(null);
     setAuthUser(null);
     setBookmarks([]);
+    localStorage.removeItem(STORAGE_TOKEN_KEY);
+    localStorage.removeItem(STORAGE_USER_KEY);
   };
 
   const updateUser = async (id, patch) => {
