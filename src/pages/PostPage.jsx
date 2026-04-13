@@ -36,7 +36,8 @@ const CommentIcon = () => (
 
 export default function PostPage() {
   const { postId } = useParams();
-  const { posts, currentUser, addComment, deletePost, loadComments, commentsByPost } = useApp();
+  const { posts, currentUser, addComment, deletePost, loadComments, commentsByPost, incrementView, vote } =
+    useApp();
   const navigate = useNavigate();
   const [commentText, setCommentText] = useState('');
   const [error, setError] = useState('');
@@ -53,8 +54,9 @@ export default function PostPage() {
     if (post && !viewMarked.current) {
       viewMarked.current = true;
       loadComments(post.id);
+      incrementView(post.id).catch(() => {});
     }
-  }, [loadComments, post]);
+  }, [incrementView, loadComments, post]);
 
   if (!post) return <div className="muted">Публикация не найдена.</div>;
 
@@ -116,6 +118,17 @@ export default function PostPage() {
         <span className="stat">
           <CommentIcon /> Комментарии: {comments.length}
         </span>
+        {isPublished && (
+          <span className="stat stat-votes">
+            <button className="ghost vote-btn" onClick={() => vote(post.id, 1)}>
+              ⬆
+            </button>
+            <span>Рейтинг: {post.score}</span>
+            <button className="ghost vote-btn" onClick={() => vote(post.id, -1)}>
+              ⬇
+            </button>
+          </span>
+        )}
       </div>
 
       {canEdit && (

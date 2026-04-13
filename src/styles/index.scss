@@ -263,6 +263,15 @@ main {
   gap: 6px;
 }
 
+.post-stats .stat-votes {
+  margin-left: auto;
+}
+
+.vote-btn {
+  padding: 6px 10px;
+  min-width: 36px;
+}
+
 .comment-form {
   display: flex;
   flex-direction: column;

@@ -291,9 +291,49 @@ export function AppProvider({ children }) {
     await loadBookmarks();
   };
 
-  const incrementView = () => {};
+  const incrementView = async (postId) => {
+    const data = await graphqlRequest(
+      `
+        mutation IncrementPostView($id: Int!) {
+          incrementPostView(id: $id) {
+            id
+            viewCount
+            rating
+          }
+        }
+      `,
+      { variables: { id: Number(postId) } }
+    );
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.id === String(postId)
+          ? { ...post, views: data.incrementPostView.viewCount, score: data.incrementPostView.rating }
+          : post
+      )
+    );
+  };
 
-  const vote = () => {};
+  const vote = async (postId, delta) => {
+    const data = await graphqlRequest(
+      `
+        mutation VotePost($id: Int!, $delta: Int!) {
+          votePost(id: $id, delta: $delta) {
+            id
+            rating
+            viewCount
+          }
+        }
+      `,
+      { variables: { id: Number(postId), delta } }
+    );
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.id === String(postId)
+          ? { ...post, score: data.votePost.rating, views: data.votePost.viewCount }
+          : post
+      )
+    );
+  };
 
   const loadComments = useCallback(async (postId) => {
     const data = await graphqlRequest(
