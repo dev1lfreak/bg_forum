@@ -391,6 +391,16 @@ button:active,
   justify-content: space-between;
 }
 
+.profile-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-title h1 {
+  margin: 0;
+}
+
 .section-head {
   display: flex;
   align-items: center;

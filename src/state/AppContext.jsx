@@ -192,6 +192,15 @@ export function AppProvider({ children }) {
     setAuthUser(updated);
   };
 
+  const changePassword = async ({ userId, oldPassword, newPassword }) => {
+    if (!token) throw new Error('Требуется авторизация');
+    await apiRequest(`/users/${userId}/change-password`, {
+      method: 'POST',
+      token,
+      body: { oldPassword, newPassword }
+    });
+  };
+
   const addPost = async (payload) => {
     if (!token) throw new Error('Требуется авторизация');
     const selectedTagIds = tags
@@ -368,7 +377,8 @@ export function AppProvider({ children }) {
     commentsByPost,
     loadComments,
     addComment,
-    updateUser
+    updateUser,
+    changePassword
   };
 
   return (

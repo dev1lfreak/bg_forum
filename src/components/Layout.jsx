@@ -29,6 +29,7 @@ const MoonIcon = () => (
 
 export default function Layout({ children }) {
   const { currentUser, toggleTheme, theme, setSearch, logout } = useApp();
+  const canCreatePost = currentUser?.role === 'admin' || currentUser?.role === 'author';
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
@@ -57,12 +58,14 @@ export default function Layout({ children }) {
             </>
           ) : (
             <button className="ghost" onClick={logout}>
-              Выйти ({currentUser?.role})
+              Выйти
             </button>
           )}
-          <Link className="pill" to="/create">
-            Создать пост
-          </Link>
+          {canCreatePost && (
+            <Link className="pill" to="/create">
+              Создать пост
+            </Link>
+          )}
           {currentUser && currentUser.id !== 'guest' && (
             <button className="ghost" onClick={() => navigate('/me')}>
               Мой профиль
