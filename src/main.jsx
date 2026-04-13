@@ -6,7 +6,7 @@ import { AppProvider } from './state/AppContext.jsx';
 import './styles/index.scss';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <HashRouter basename="/bg_forum">
+  <HashRouter>
     <AppProvider>
       <App />
     </AppProvider>
