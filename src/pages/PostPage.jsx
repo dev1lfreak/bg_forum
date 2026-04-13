@@ -54,7 +54,9 @@ export default function PostPage() {
     if (post && !viewMarked.current) {
       viewMarked.current = true;
       loadComments(post.id);
-      incrementView(post.id).catch(() => {});
+      if (post.status === 'published') {
+        incrementView(post.id).catch(() => {});
+      }
     }
   }, [incrementView, loadComments, post]);
 
