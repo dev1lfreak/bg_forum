@@ -47,7 +47,7 @@ export function AppProvider({ children }) {
       tags: resolvedTags,
       images: [],
       authorId: String(post.authorId),
-      authorName: post.author?.username ?? 'Автор',
+      authorName: post.authorUsername ?? post.author?.username ?? 'Автор',
       status: String(post.status).toLowerCase() === 'published' ? 'published' : 'draft',
       createdAt: post.createdAt,
       views: post.viewCount ?? 0,
