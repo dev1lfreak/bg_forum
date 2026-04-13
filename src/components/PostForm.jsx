@@ -26,9 +26,16 @@ export default function PostForm() {
   }, [editingPost]);
 
   const handleSubmit = async (status) => {
+    const trimmedTitle = title.trim();
+    const trimmedContent = content.trim();
+    if (!trimmedTitle || !trimmedContent) {
+      setError('Заполните заголовок и текст поста.');
+      return;
+    }
+
     const payload = {
-      title,
-      content,
+      title: trimmedTitle,
+      content: trimmedContent,
       tags: tags
         .split(' ')
         .map((t) => t.trim())

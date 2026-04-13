@@ -203,6 +203,9 @@ export function AppProvider({ children }) {
 
   const addPost = async (payload) => {
     if (!token) throw new Error('Требуется авторизация');
+    if (!payload.title?.trim() || !payload.content?.trim()) {
+      throw new Error('Заголовок и текст обязательны.');
+    }
     const selectedTagIds = tags
       .filter((tag) => payload.tags.includes(tag.name))
       .map((tag) => tag.id);
@@ -218,8 +221,8 @@ export function AppProvider({ children }) {
         token,
         variables: {
           input: {
-            title: payload.title,
-            content: payload.content,
+            title: payload.title.trim(),
+            content: payload.content.trim(),
             status: payload.status === 'published' ? 'Published' : 'Draft',
             tagIds: selectedTagIds
           }
@@ -234,6 +237,9 @@ export function AppProvider({ children }) {
     if (!token) throw new Error('Требуется авторизация');
     const source = posts.find((p) => p.id === String(postId));
     const patch = typeof updater === 'function' ? updater(source) : updater;
+    if (!patch.title?.trim() || !patch.content?.trim()) {
+      throw new Error('Заголовок и текст обязательны.');
+    }
     const selectedTagIds = tags
       .filter((tag) => (patch.tags ?? []).includes(tag.name))
       .map((tag) => tag.id);
@@ -251,8 +257,8 @@ export function AppProvider({ children }) {
         variables: {
           input: {
             id: Number(postId),
-            title: patch.title,
-            content: patch.content,
+            title: patch.title.trim(),
+            content: patch.content.trim(),
             status: patch.status === 'published' ? 'Published' : 'Draft',
             tagIds: selectedTagIds
           }
