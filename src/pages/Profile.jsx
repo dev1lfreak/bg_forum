@@ -15,6 +15,7 @@ export default function Profile() {
 
   const canEditProfile = currentUser?.id === user.id || currentUser?.role === 'admin';
   const canCreatePost = currentUser?.role === 'admin' || currentUser?.role === 'author';
+  const showAuthorSections = user.role !== 'user';
 
   const handleEditName = () => {
     const next = prompt('Новое имя профиля', user.name);
@@ -66,32 +67,36 @@ export default function Profile() {
         )}
       </header>
 
-      <section>
-        <div className="section-head">
-          <h2>Опубликованные</h2>
-          {canCreatePost && (
-            <Link className="ghost" to="/create">
-              Написать пост
-            </Link>
-          )}
-        </div>
-        {myPosts.length ? (
-          myPosts.map((p) => <PostCard key={p.id} post={p} />)
-        ) : (
-          <div className="muted">Пока нет публикаций.</div>
-        )}
-      </section>
+      {showAuthorSections && (
+        <>
+          <section>
+            <div className="section-head">
+              <h2>Опубликованные</h2>
+              {canCreatePost && (
+                <Link className="ghost" to="/create">
+                  Написать пост
+                </Link>
+              )}
+            </div>
+            {myPosts.length ? (
+              myPosts.map((p) => <PostCard key={p.id} post={p} />)
+            ) : (
+              <div className="muted">Пока нет публикаций.</div>
+            )}
+          </section>
 
-      <section>
-        <div className="section-head">
-          <h2>Черновики</h2>
-        </div>
-        {myDrafts.length ? (
-          myDrafts.map((p) => <PostCard key={p.id} post={p} />)
-        ) : (
-          <div className="muted">Черновиков нет.</div>
-        )}
-      </section>
+          <section>
+            <div className="section-head">
+              <h2>Черновики</h2>
+            </div>
+            {myDrafts.length ? (
+              myDrafts.map((p) => <PostCard key={p.id} post={p} />)
+            ) : (
+              <div className="muted">Черновиков нет.</div>
+            )}
+          </section>
+        </>
+      )}
 
       <section>
         <div className="section-head">

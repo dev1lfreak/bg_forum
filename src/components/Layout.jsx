@@ -66,6 +66,11 @@ export default function Layout({ children }) {
               Создать пост
             </Link>
           )}
+          {currentUser?.role === 'admin' && (
+            <Link className="ghost" to="/admin">
+              Админ-панель
+            </Link>
+          )}
           {currentUser && currentUser.id !== 'guest' && (
             <button className="ghost" onClick={() => navigate('/me')}>
               Мой профиль
